@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSB Temple Details</title>
+    <style>
+        :root {
+            --primary: #8b5a2b;
+            --secondary: #d4a76a;
+            --light: #f7f2e9;
+            --dark: #2c1e0f;
+            --accent: #c14c2a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: "";
+            background-image: url('/api/placeholder/1200/300');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+        
+        header h1, header p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: var(--accent);
+        }
+        
+        .temple-dropdown {
+            padding: 0.75rem;
+            border: 2px solid var(--secondary);
+            border-radius: 4px;
+            background-color: white;
+            min-width: 200px;
+            font-size: 1rem;
+        }
+        
+        .temple-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
+        }
+        
+        .temple-name {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .temple-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .temple-location, .temple-deity {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .temple-banner {
+            width: 100%;
+            height: 300px;
+            background-color: var(--secondary);
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .temple-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .temple-description {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .description-section {
+            margin-bottom: 2rem;
+        }
+        
+        .description-section h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--secondary);
+        }
+        
+        .description-section p {
+            font-size: 1rem;
+            text-align: justify;
+        }
+        
+        .temple-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .sidebar-section {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-section h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--secondary);
+        }
+        
+        .temple-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .gallery-image {
+            height: 120px;
+            background-color: var(--secondary);
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .gallery-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .temple-timings, .temple-location-info {
+            font-size: 0.95rem;
+        }
+        
+        .timing-row, .location-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timing-day, .location-label {
+            font-weight: 600;
+        }
+        
+        .festivals-list {
+            list-style-type: none;
+        }
+        
+        .festivals-list li {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--secondary);
+        }
+        
+        .festivals-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .festival-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .festival-date {
+            font-size: 0.85rem;
+            color: #777;
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid white;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 992px) {
+            .temple-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .temple-dropdown {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .temple-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>GSB Temple Details</h1>
+        <p>Comprehensive information about temples in the GSB community</p>
+    </header>
+    
+    <div class="container">
+        <div class="navigation">
+            <a href="index.html" class="back-button">← Back to Temple Directory</a>
+            <select class="temple-dropdown" id="temple-selector">
+                <option value="1">Sri Krishna Temple, Udupi</option>
+                <option value="2">Kukke Subramanya Temple</option>
+                <option value="3">Kollur Mookambika Temple</option>
+                <option value="4">Kateel Durgaparameshwari Temple</option>
+                <option value="5">Kadri Manjunatha Temple</option>
+                <option value="6">Mahalingeshwara Temple</option>
+            </select>
+        </div>
+        
+        <div class="temple-header">
+            <h1 class="temple-name" id="temple-name">Sri Krishna Temple</h1>
+            <div class="temple-meta">
+                <p class="temple-location" id="temple-location">📍 Udupi, Karnataka</p>
+                <p class="temple-deity" id="temple-deity">🕉️ Main Deity: Lord Krishna</p>
+            </div>
+        </div>
+        
+        <div class="temple-banner" style="background-image: url('https://placehold.co/1200x300')" id="temple-banner"></div>
+        
+        <div class="temple-content">
+            <div class="temple-description">
+                <div class="description-section">
+                    <h2>About the Temple</h2>
+                    <p id="about-description">The Sri Krishna Temple in Udupi is one of the most significant Krishna temples in India. Founded by Jagadguru Sri Madhvacharya in the 13th century, it houses a beautiful idol of Lord Krishna that is worshipped through a window with nine holes called 'Navagraha Kitiki'. The temple complex includes several other shrines and the famous Car Street where various religious festivals take place.</p>
+                    <p class="mt-4">Known for its rich historical significance and architectural beauty, the temple attracts thousands of devotees daily. The temple is associated with the Dvaita philosophy propagated by Sri Madhvacharya and is one of the Ashta Mathas (eight monasteries) established by him.</p>
+                </div>
+                
+                <div class="description-section">
+                    <h2>Historical Significance</h2>
+                    <p id="history-description">The temple has a rich history dating back to the 13th century when Sri Madhvacharya, the proponent of Dvaita philosophy, installed the idol of Lord Krishna. According to legend, the idol was originally from Dwaraka and was discovered by Madhvacharya embedded in a lump of gopichandana (sacred clay).</p>
+                    <p class="mt-4">The temple has been an important center for the preservation and propagation of Vedic knowledge and Bhakti tradition. It has been visited by many saints and philosophers over the centuries, contributing to its spiritual significance.</p>
+                </div>
+                
+                <div class="description-section">
+                    <h2>Architecture</h2>
+                    <p id="architecture-description">The temple complex is built in the traditional Dravidian style of architecture, featuring a main shrine for Lord Krishna, surrounded by smaller shrines dedicated to various deities. The unique feature of this temple is the way Lord Krishna is worshipped through a silver-plated window with nine holes (Navagraha Kitiki).</p>
+                    <p class="mt-4">The temple complex also includes the Kanakana Kindi, a small window through which Saint Kanakadasa is said to have received darshan of Lord Krishna. The temple has intricate stone carvings, wooden pillars, and a magnificent gopuram (tower) that showcase the architectural brilliance of ancient times.</p>
+                </div>
+                
+                <div class="description-section">
+                    <h2>Cultural Impact</h2>
+                    <p id="culture-description">The temple is not just a place of worship but also a center for cultural activities. It hosts various religious and cultural events throughout the year, including classical music concerts, dance performances, and religious discourses.</p>
+                    <p class="mt-4">The Paryaya festival, held every two years, is of particular significance. It involves the transfer of the temple management between the eight Mathas established by Madhvacharya. This unique administrative system has been in practice for centuries and is a testament to the temple's cultural heritage.</p>
+                </div>
+                
+                <div class="description-section">
+                    <h2>Festivals & Events</h2>
+                    <p id="festivals-description">Paryaya Festival (held every two years in January), Krishna Janmashtami, Radhastami, Madhva Navami, and daily rituals such as Darshan, Abhisheka, and Maha Puja are celebrated with great devotion. The temple follows a strict schedule of rituals and ceremonies that have been maintained for centuries.</p>
+                    <p class="mt-4">During Krishna Janmashtami, the temple is elaborately decorated, and special pujas are performed throughout the night. The Car Festival (Rathothsava) is another important event where the idol of Lord Krishna is taken out in a procession around Car Street.</p>
+                </div>
+            </div>
+            
+            <div class="temple-sidebar">
+                <div class="sidebar-section">
+                    <h3>Photo Gallery</h3>
+                    <div class="temple-gallery">
+                        <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                        <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                        <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                        <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Temple Timings</h3>
+                    <div class="temple-timings" id="temple-timings">
+                        <div class="timing-row">
+                            <span class="timing-day">Morning</span>
+                            <span class="timing-hours">4:00 AM - 1:00 PM</span>
+                        </div>
+                        <div class="timing-row">
+                            <span class="timing-day">Evening</span>
+                            <span class="timing-hours">3:00 PM - 9:00 PM</span>
+                        </div>
+                        <div class="timing-row">
+                            <span class="timing-day">Special Poojas</span>
+                            <span class="timing-hours">5:30 AM, 10:00 AM, 1:00 PM, 5:00 PM, 8:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Location & Directions</h3>
+                    <div class="temple-location-info" id="temple-directions">
+                        <div class="location-row">
+                            <span class="location-label">Address</span>
+                            <span class="location-value">Car Street, Udupi, Karnataka 576101</span>
+                        </div>
+                        <div class="location-row">
+                            <span class="location-label">Nearest City</span>
+                            <span class="location-value">Udupi</span>
+                        </div>
+                        <div class="location-row">
+                            <span class="location-label">Distance from Mangalore</span>
+                            <span class="location-value">60 km</span>
+                        </div>
+                        <div class="location-row">
+                            <span class="location-label">How to Reach</span>
+                            <span class="location-value">Regular buses from Mangalore, Manipal, and Kundapura. The temple is located in the heart of Udupi town.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Major Festivals</h3>
+                    <ul class="festivals-list" id="festivals-list">
+                        <li>
+                            <div class="festival-name">Paryaya Festival</div>
+                            <div class="festival-date">January (every two years)</div>
+                        </li>
+                        <li>
+                            <div class="festival-name">Krishna Janmashtami</div>
+                            <div class="festival-date">August/September</div>
+                        </li>
+                        <li>
+                            <div class="festival-name">Radhastami</div>
+                            <div class="festival-date">September</div>
+                        </li>
+                        <li>
+                            <div class="festival-name">Madhva Navami</div>
+                            <div class="festival-date">November/December</div>
+                        </li>
+                        <li>
+                            <div class="festival-name">Car Festival (Rathothsava)</div>
+                            <div class="festival-date">February/March</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Visiting Guidelines</h3>
+                    <ul class="temple-guidelines" id="temple-guidelines">
+                        <li>Traditional dress is preferred (dhotis for men, sarees or churidars for women)</li>
+                        <li>Photography is restricted inside the main shrine</li>
+                        <li>Maintain silence and discipline within the temple premises</li>
+                        <li>Mobile phones should be switched to silent mode</li>
+                        <li>Follow the queue system for darshan</li>
+                        <li>Special archanas and sevas can be booked at the temple office</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 GSB Temple Directory | All Rights Reserved</p>
+        <p>A comprehensive resource for temples in the GSB community</p>
+    </footer>
+    
+    <script>
+        // Temple data
+        const templeData = {
+            1: {
+                name: "Sri Krishna Temple",
+                location: "📍 Udupi, Karnataka",
+                deity: "🕉️ Main Deity: Lord Krishna",
+                about: "The Sri Krishna Temple in Udupi is one of the most significant Krishna temples in India. Founded by Jagadguru Sri Madhvacharya in the 13th century, it houses a beautiful idol of Lord Krishna that is worshipped through a window with nine holes called 'Navagraha Kitiki'. The temple complex includes several other shrines and the famous Car Street where various religious festivals take place.",
+                history: "The temple has a rich history dating back to the 13th century when Sri Madhvacharya, the proponent of Dvaita philosophy, installed the idol of Lord Krishna. According to legend, the idol was originally from Dwaraka and was discovered by Madhvacharya embedded in a lump of gopichandana (sacred clay).",
+                architecture: "The temple complex is built in the traditional Dravidian style of architecture, featuring a main shrine for Lord Krishna, surrounded by smaller shrines dedicated to various deities. The unique feature of this temple is the way Lord Krishna is worshipped through a silver-plated window with nine holes (Navagraha Kitiki).",
+                culture: "The temple is not just a place of worship but also a center for cultural activities. It hosts various religious and cultural events throughout the year, including classical music concerts, dance performances, and religious discourses.",
+                festivals: "Paryaya Festival (held every two years in January), Krishna Janmashtami, Radhastami, Madhva Navami, and daily rituals such as Darshan, Abhisheka, and Maha Puja are celebrated with great devotion.",
+                timings: [
+                    { day: "Morning", hours: "4:00 AM - 1:00 PM" },
+                    { day: "Evening", hours: "3:00 PM - 9:00 PM" },
+                    { day: "Special Poojas", hours: "5:30 AM, 10:00 AM, 1:00 PM, 5:00 PM, 8:00 PM" }
+                ],
+                directions: [
+                    { label: "Address", value: "Car Street, Udupi, Karnataka 576101" },
+                    { label: "Nearest City", value: "Udupi" },
+                    { label: "Distance from Mangalore", value: "60 km" },
+                    { label: "How to Reach", value: "Regular buses from Mangalore, Manipal, and Kundapura. The temple is located in the heart of Udupi town." }
+                ],
+                festivalsList: [
+                    { name: "Paryaya Festival", date: "January (every two years)" },
+                    { name: "Krishna Janmashtami", date: "August/September" },
+                    { name: "Radhastami", date: "September" },
+                    { name: "Madhva Navami", date: "November/December" },
+                    { name: "Car Festival (Rathothsava)", date: "February/March" }
+                ],
+                guidelines: [
+                    "Traditional dress is preferred (dhotis for men, sarees or churidars for women)",
+                    "Photography is restricted inside the main shrine",
+                    "Maintain silence and discipline within the temple premises",
+                    "Mobile phones should be switched to silent mode",
+                    "Follow the queue system for darshan",
+                    "Special archanas and sevas can be booked at the temple office"
+                ]
+            },
+            2: {
+                name: "Kukke Subramanya Temple",
+                location: "📍 Sullia, Karnataka",
+                deity: "🕉️ Main Deity: Lord Subramanya",
+                about: "Kukke Subramanya Temple is situated at the foothills of the Western Ghats in the sacred town of Subramanya. Dedicated to Lord Subramanya (Kartikeya), the temple is especially revered for prayers related to removing Sarpa Dosha (ill effects of serpents).",
+                history: "The temple has ancient origins with references in the Skanda Purana. It is believed that Lord Subramanya killed the demon Tarakasura here and rested after the battle. The current structure has been renovated and expanded over centuries, with major renovations during the Vijayanagara Empire period.",
+                architecture: "The temple follows the traditional Kerala-Dravidian style of architecture with a copper-roofed main sanctum. The temple complex includes a spacious Mukha Mandapa (entrance hall), a grand Natyamandapa (hall for rituals), and a circumambulatory path around the sanctum.",
+                culture: "The temple has significant cultural importance in the region, especially for the Naga worship tradition. It attracts devotees from all over India, particularly those seeking relief from Sarpa Dosha. The temple has also been a patron of local art forms and traditions.",
+                festivals: "Champa Shashti (November-December), Nagara Panchami, Subramanya Shashti, and special poojas during Skanda Shashti are celebrated with great fervor.",
+                timings: [
+                    { day: "Morning", hours: "6:30 AM - 1:30 PM" },
+                    { day: "Evening", hours: "4:00 PM - 8:30 PM" },
+                    { day: "Special Poojas", hours: "7:30 AM, 12:30 PM, 7:30 PM" }
+                ],
+                directions: [
+                    { label: "Address", value: "Kukke Subramanya, Sullia Taluk, Karnataka 574238" },
+                    { label: "Nearest City", value: "Mangalore" },
+                    { label: "Distance from Mangalore", value: "105 km" },
+                    { label: "How to Reach", value: "Regular buses from Mangalore and Bangalore. The nearest railway station is Subrahmanya Road (12 km)." }
+                ],
+                festivalsList: [
+                    { name: "Champa Shashti", date: "November/December" },
+                    { name: "Nagara Panchami", date: "July/August" },
+                    { name: "Subramanya Shashti", date: "Monthly (on Shashti)" },
+                    { name: "Skanda Shashti", date: "October/November" },
+                    { name: "Brahma Rathotsava", date: "March/April" }
+                ],
+                guidelines: [
+                    "Men should wear dhotis or pants (shorts not allowed)",
+                    "Women should wear sarees, churidars, or long skirts",
+                    "Sarpa Samskara poojas need to be booked in advance",
+                    "Photography is restricted inside the temple",
+                    "Accommodation can be booked through the temple office",
+                    "Special diet restrictions during special poojas"
+                ]
+            },
+            3: {
+                name: "Kollur Mookambika Temple",
+                location: "📍 Kollur, Karnataka",
+                deity: "🕉️ Main Deity: Goddess Mookambika",
+                about: "The Kollur Mookambika Temple is a renowned temple dedicated to Goddess Mookambika, a form of Parvati. Located in the serene environment of the Western Ghats, the temple has a rich history dating back several centuries. According to legend, the temple was established by Adi Shankaracharya.",
+                history: "The temple was established by Adi Shankaracharya in the 8th century CE. Legend has it that the goddess appeared before him in the form of a Jyotirlinga, and he installed the deity at this location. The temple has received patronage from various dynasties including the Kadambas, Hoysalas, and Vijayanagara rulers.",
+                architecture: "The temple architecture is a blend of Kerala and Karnataka styles, featuring a gold-plated Dwajasthambha (flag post) and a unique Gopuram. The main sanctum houses the Swayambhu (self-manifested) idol of Goddess Mookambika, which is in the form of a Jyotirlinga representing both Shiva and Shakti.",
+                culture: "The temple is particularly revered by musicians and artists, as Goddess Mookambika is considered the patron deity of the arts. Many classical musicians and dancers seek her blessings before beginning their careers. The temple is also closely associated with the Shakti tradition and Tantric worship.",
+                festivals: "Navaratri celebrations, Mookambika Rathotsava (March-April), Moola Nakshatra day celebrations, and special pujas during auspicious days are the major festivals.",
+                timings: [
+                    { day: "Morning", hours: "5:00 AM - 1:00 PM" },
+                    { day: "Evening", hours: "3:00 PM - 8:30 PM" },
+                    { day: "Special Poojas", hours: "5:30 AM, 8:30 AM, 12:00 PM, 7:30 PM" }
+                ],
+                directions: [
+                    { label: "Address", value: "Kollur, Udupi District, Karnataka 576220" },
+                    { label: "Nearest City", value: "Kundapura" },
+                    { label: "Distance from Mangalore", value: "147 km" },
+                    { label: "How to Reach", value: "Regular buses from Mangalore, Udupi, and Shimoga. The nearest railway station is at Kundapura (38 km)." }
+                ],
+                festivalsList: [
+                    { name: "Navaratri", date: "September/October" },
+                    { name: "Mookambika Rathotsava", date: "March/April" },
+                    { name: "Moola Nakshatra", date: "Monthly" },
+                    { name: "Durgashtami", date: "Monthly" },
+                    { name: "Sahasra Chandika Havana", date: "February/March" }
+                ],
+                guidelines: [
+                    "Traditional dress is mandatory (dhotis for men, sarees or long dresses for women)",
+                    "Special pujas need to be booked in advance",
+                    "Cameras and mobile phones are not allowed inside the main shrine",
+                    "Footwear must be left at designated areas",
+                    "Free prasada is distributed after noon aarti",
+                    "Accommodation facilities are available through the temple office"
+                ]
+            },
+            4: {
+                name: "Kateel Durgaparameshwari Temple",
+                location: "📍 Kateel, Karnataka",
+                deity: "🕉️ Main Deity: Goddess Durgaparameshwari",
+                about: "The Kateel Durgaparameshwari Temple is uniquely situated on an islet in the middle of the River Nandini. Dedicated to Goddess Durgaparameshwari, it's one of the most important temples for the GSB community. The temple architecture blends Kerala and Karnataka styles.",
+                history: "The temple history dates back to over 800 years. According to legend, a merchant named Kundavarma discovered the divine power of the goddess at this location. The temple was initially a small structure that was later expanded through the patronage of local rulers and the GSB community.",
+                architecture: "The temple is built on a small island in the River Nandini and is accessible via a bridge. The architecture blends Kerala and Karnataka styles with wooden roofs covered with copper sheets. The main sanctum houses the goddess in her ferocious form, seated on a lion.",
+                culture: "The temple holds special significance for the GSB community and is considered one of their most important religious centers. The temple is also known for its unique rituals, including the practice of offering prayers to ancestral spirits during Amavasya days.",
+                festivals: "Annual Kateel Jatra (April-May), Navaratri, Dasara, and special rituals during Amavasya (new moon) days are the major festivals.",
+                timings: [
+                    { day: "Morning", hours: "6:00 AM - 1:00 PM" },
+                    { day: "Evening", hours: "4:00 PM - 8:00 PM" },
+                    { day: "Special Poojas", hours: "7:00 AM, 9:00 AM, 12:00 PM, 7:00 PM" }
+                ],
+                directions: [
+                    { label: "Address", value: "Kateel, Mangalore Taluk, Karnataka 574148" },
+                    { label: "Nearest City", value: "Mangalore" },
+                    { label: "Distance from Mangalore", value: "29 km" },
+                    { label: "How to Reach", value: "Regular buses from Mangalore city. The temple is situated off the Mangalore-Udupi highway." }
+                ],
+                festivalsList: [
+                    { name: "Annual Kateel Jatra", date: "April/May" },
+                    { name: "Navaratri", date: "September/October" },
+                    { name: "Dasara", date: "October" },
+                    { name: "Amavasya Rituals", date: "Monthly (New Moon)" },
