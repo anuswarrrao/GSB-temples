@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSB Temple Directory</title>
+    <style>
+        :root {
+            --primary: #8b5a2b;
+            --secondary: #d4a76a;
+            --light: #f7f2e9;
+            --dark: #2c1e0f;
+            --accent: #c14c2a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: "";
+            background-image: url('/api/placeholder/1200/300');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+        
+        header h1, header p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-bar {
+            flex: 1;
+            min-width: 300px;
+            padding: 0.75rem;
+            border: 2px solid var(--secondary);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid var(--secondary);
+            border-radius: 4px;
+            background-color: white;
+            min-width: 150px;
+        }
+        
+        .temple-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .temple-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .temple-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .temple-image {
+            height: 200px;
+            background-color: var(--secondary);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .temple-info {
+            padding: 1.5rem;
+        }
+        
+        .temple-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .temple-location, .temple-deity {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .temple-description {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .view-more {
+            display: inline-block;
+            margin-top: 1rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .view-more:hover {
+            background-color: var(--accent);
+        }
+        
+        .pagination {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .page-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--secondary);
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-button:hover, .page-button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .temple-details {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .temple-details-content {
+            background-color: white;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .temple-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .gallery-image {
+            height: 120px;
+            background-color: var(--secondary);
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .temple-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .temple-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>GSB Temple Directory</h1>
+        <p>Discover and explore temples of the GSB community</p>
+    </header>
+    
+    <div class="container">
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search temples by name, deity, or location...">
+            <div class="filters">
+                <select class="filter-select" id="location-filter">
+                    <option value="">All Locations</option>
+                    <option value="Udupi">Udupi</option>
+                    <option value="Mangalore">Mangalore</option>
+                    <option value="Karkala">Karkala</option>
+                    <option value="Kundapur">Kundapur</option>
+                </select>
+                <select class="filter-select" id="deity-filter">
+                    <option value="">All Deities</option>
+                    <option value="Ganesha">Ganesha</option>
+                    <option value="Krishna">Krishna</option>
+                    <option value="Durgaparameshwari">Durgaparameshwari</option>
+                    <option value="Subramanya">Subramanya</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="temple-grid">
+            <!-- Temple Card 1 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Sri Krishna Temple</h3>
+                    <p class="temple-location">📍 Udupi, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Lord Krishna</p>
+                    <p class="temple-description">One of the most revered Krishna temples in India, known for its rich history and cultural significance.</p>
+                    <a href="details.html" class="view-more" onclick="showDetails(1)">View Details</a>
+                </div>
+            </div>
+            
+            <!-- Temple Card 2 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Kukke Subramanya Temple</h3>
+                    <p class="temple-location">📍 Sullia, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Lord Subramanya</p>
+                    <p class="temple-description">Famous temple dedicated to Lord Subramanya, situated in the serene Western Ghats.</p>
+                    <a href="#" class="view-more" onclick="showDetails(2)">View Details</a>
+                </div>
+            </div>
+            
+            <!-- Temple Card 3 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Kollur Mookambika Temple</h3>
+                    <p class="temple-location">📍 Kollur, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Goddess Mookambika</p>
+                    <p class="temple-description">Sacred temple dedicated to Goddess Mookambika, nestled in the foothills of the Western Ghats.</p>
+                    <a href="details.html" class="view-more" onclick="showDetails(3)">View Details</a>
+                </div>
+            </div>
+            
+            <!-- Temple Card 4 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Kateel Durgaparameshwari Temple</h3>
+                    <p class="temple-location">📍 Kateel, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Goddess Durgaparameshwari</p>
+                    <p class="temple-description">Temple situated on an islet in the middle of the River Nandini, dedicated to Goddess Durgaparameshwari.</p>
+                    <a href="details.html" class="view-more" onclick="showDetails(4)">View Details</a>
+                </div>
+            </div>
+            
+            <!-- Temple Card 5 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Kadri Manjunatha Temple</h3>
+                    <p class="temple-location">📍 Mangalore, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Lord Shiva</p>
+                    <p class="temple-description">Ancient temple dedicated to Lord Manjunatha (Shiva), known for its bronze sculptures and historical significance.</p>
+                    <a href="details.html" class="view-more" onclick="showDetails(5)">View Details</a>
+                </div>
+            </div>
+            
+            <!-- Temple Card 6 -->
+            <div class="temple-card">
+                <div class="temple-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="temple-info">
+                    <h3 class="temple-name">Mahalingeshwara Temple</h3>
+                    <p class="temple-location">📍 Karkala, Karnataka</p>
+                    <p class="temple-deity">🕉️ Main Deity: Lord Shiva</p>
+                    <p class="temple-description">Historic temple known for its intricate architecture and cultural importance in the GSB community.</p>
+                    <a href="details.html" class="view-more" onclick="showDetails(6)">View Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pagination">
+            <button class="page-button active">1</button>
+            <button class="page-button">2</button>
+            <button class="page-button">3</button>
+            <button class="page-button">Next →</button>
+        </div>
+    </div>
+    
+    <!-- Temple Details Modal -->
+    <div class="temple-details" id="temple-details">
+        <div class="temple-details-content">
+            <button class="close-button" onclick="closeDetails()">×</button>
+            <h2 id="detail-temple-name">Temple Name</h2>
+            <p id="detail-temple-location">Location</p>
+            <p id="detail-temple-deity">Main Deity</p>
+            
+            <div class="temple-gallery">
+                <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+                <div class="gallery-image" style="background-image: url('https://placehold.co/400x300')"></div>
+            </div>
+            
+            <h3>About the Temple</h3>
+            <p id="detail-temple-description">Detailed description of the temple, its history, cultural significance, and architectural features.</p>
+            
+            <h3>Festivals & Events</h3>
+            <p id="detail-temple-festivals">Information about major festivals celebrated at the temple, annual events, and special pujas.</p>
+            
+            <h3>Visiting Information</h3>
+            <p id="detail-temple-visiting">Temple timings, dress code, special instructions for visitors, and how to reach the temple.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 GSB Temple Directory | All Rights Reserved</p>
+        <p>A comprehensive resource for temples in the GSB community</p>
+    </footer>
+    
+    <script>
+        function showDetails(id) {
+            const templeDetails = {
+                1: {
+                    name: "Sri Krishna Temple",
+                    location: "📍 Udupi, Karnataka",
+                    deity: "🕉️ Main Deity: Lord Krishna",
+                    description: "The Sri Krishna Temple in Udupi is one of the most significant Krishna temples in India. Founded by Jagadguru Sri Madhvacharya in the 13th century, it houses a beautiful idol of Lord Krishna that is worshipped through a window with nine holes called 'Navagraha Kitiki'. The temple complex includes several other shrines and the famous Car Street where various religious festivals take place. Known for its rich historical significance and architectural beauty, the temple attracts thousands of devotees daily.",
+                    festivals: "Paryaya Festival (held every two years in January), Krishna Janmashtami, Radhastami, Madhva Navami, and daily rituals such as Darshan, Abhisheka, and Maha Puja.",
+                    visiting: "Open daily from 4:00 AM to 9:00 PM. Dress code: Traditional attire preferred. Major pujas are held at 5:30 AM, 10:00 AM, 1:00 PM, 5:00 PM, and 8:00 PM. Located in the center of Udupi town, easily accessible by bus or auto from nearby cities."
+                },
+                2: {
+                    name: "Kukke Subramanya Temple",
+                    location: "📍 Sullia, Karnataka",
+                    deity: "🕉️ Main Deity: Lord Subramanya",
+                    description: "Kukke Subramanya Temple is situated at the foothills of the Western Ghats in the sacred town of Subramanya. Dedicated to Lord Subramanya (Kartikeya), the temple is especially revered for prayers related to removing Sarpa Dosha (ill effects of serpents). The temple is surrounded by lush greenery and the Kumara Parvatha hills, adding to its spiritual ambiance. The idol of Lord Subramanya is believed to be self-manifested (Swayambhu) and is worshipped along with the serpent king Vasuki.",
+                    festivals: "Champa Shashti (November-December), Nagara Panchami, Subramanya Shashti, and special poojas during Skanda Shashti.",
+                    visiting: "Open from 6:30 AM to 8:30 PM. Special sevas require advance booking. Located 105 km from Mangalore, accessible by bus or taxi. Accommodation facilities are available nearby for pilgrims."
+                },
+                3: {
+                    name: "Kollur Mookambika Temple",
+                    location: "📍 Kollur, Karnataka",
+                    deity: "🕉️ Main Deity: Goddess Mookambika",
+                    description: "The Kollur Mookambika Temple is a renowned temple dedicated to Goddess Mookambika, a form of Parvati. Located in the serene environment of the Western Ghats, the temple has a rich history dating back several centuries. According to legend, the temple was established by Adi Shankaracharya. The main deity is in the form of a Jyotirlinga, embodying both Shiva and Shakti. The temple is especially significant for musicians and students, as the goddess is considered the patron deity of learning and arts.",
+                    festivals: "Navaratri celebrations, Mookambika Rathotsava (March-April), Moola Nakshatra day celebrations, and special pujas during auspicious days.",
+                    visiting: "Open from 5:00 AM to 1:00 PM and 3:00 PM to 8:30 PM. Located 147 km from Mangalore, accessible by bus or car. Accommodation and prasada facilities are available at the temple."
+                },
+                4: {
+                    name: "Kateel Durgaparameshwari Temple",
+                    location: "📍 Kateel, Karnataka",
+                    deity: "🕉️ Main Deity: Goddess Durgaparameshwari",
+                    description: "The Kateel Durgaparameshwari Temple is uniquely situated on an islet in the middle of the River Nandini. Dedicated to Goddess Durgaparameshwari, it's one of the most important temples for the GSB community. The temple architecture blends Kerala and Karnataka styles, featuring intricate wood carvings and copper roof sheets. The main shrine houses the goddess in her ferocious form, believed to protect devotees from evil forces. The temple has a rich history spanning over 800 years.",
+                    festivals: "Annual Kateel Jatra (April-May), Navaratri, Dasara, and special rituals during Amavasya (new moon) days when devotees offer prayers to ancestral spirits.",
+                    visiting: "Open from 6:00 AM to 1:00 PM and 4:00 PM to 8:00 PM. Located 29 km from Mangalore. Regular buses and private vehicles are available from Mangalore city."
+                },
+                5: {
+                    name: "Kadri Manjunatha Temple",
+                    location: "📍 Mangalore, Karnataka",
+                    deity: "🕉️ Main Deity: Lord Shiva",
+                    description: "The Kadri Manjunatha Temple is one of the oldest temples in Mangalore, believed to date back to 1068 CE. Situated at the foot of the Kadri hills, the temple is dedicated to Lord Manjunatha, a form of Lord Shiva. The temple houses a magnificent bronze image of Lokeshwara (three-faced Shiva), which is considered one of the finest bronze sculptures in India. The temple complex includes several smaller shrines and a natural spring called 'Gomukha', which is believed to have therapeutic properties.",
+                    festivals: "Kadri Manjunatha Temple Car Festival (January), Shivaratri, and other Shaivite festivals throughout the year.",
+                    visiting: "Open from 6:00 AM to 12:30 PM and 4:00 PM to 8:30 PM. Located in the heart of Mangalore city, easily accessible by local transport."
+                },
+                6: {
+                    name: "Mahalingeshwara Temple",
+                    location: "📍 Karkala, Karnataka",
+                    deity: "🕉️ Main Deity: Lord Shiva",
+                    description: "The Mahalingeshwara Temple in Karkala is an ancient temple dedicated to Lord Shiva. Known for its impressive stone architecture typical of the coastal Karnataka region, the temple showcases intricate carvings and sculptures. The main sanctum houses a large Shiva Linga, believed to be swayambhu (self-manifested). The temple has strong connections with the GSB community and is known for preserving traditional rituals and practices. The temple complex also houses several smaller shrines dedicated to various deities.",
+                    festivals: "Maha Shivaratri celebrations, Kartika Deepotsava, monthly Shiva Ratri, and special abhishekas on Mondays.",
+                    visiting: "Open from 6:30 AM to 12:00 PM and 4:30 PM to 8:00 PM. Located in Karkala town, about 50 km from Mangalore and 38 km from Udupi."
+                }
+            };
+            
+            document.getElementById('detail-temple-name').textContent = templeDetails[id].name;
+            document.getElementById('detail-temple-location').textContent = templeDetails[id].location;
+            document.getElementById('detail-temple-deity').textContent = templeDetails[id].deity;
+            document.getElementById('detail-temple-description').textContent = templeDetails[id].description;
+            document.getElementById('detail-temple-festivals').textContent = templeDetails[id].festivals;
+            document.getElementById('detail-temple-visiting').textContent = templeDetails[id].visiting;
+            
+            document.getElementById('temple-details').style.display = 'block';
+        }
+        
+        function closeDetails() {
+            document.getElementById('temple-details').style.display = 'none';
+        }
+        
+        // Basic search functionality
+        document.querySelector('.search-bar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.temple-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.temple-name').textContent.toLowerCase();
+                const location = card.querySelector('.temple-location').textContent.toLowerCase();
+                const deity = card.querySelector('.temple-deity').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || location.includes(searchTerm) || deity.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Filter functionality
+        function applyFilters() {
+            const locationFilter = document.getElementById('location-filter').value.toLowerCase();
+            const deityFilter = document.getElementById('deity-filter').value.toLowerCase();
+            const cards = document.querySelectorAll('.temple-card');
+            
+            cards.forEach(card => {
+                const location = card.querySelector('.temple-location').textContent.toLowerCase();
+                const deity = card.querySelector('.temple-deity').textContent.toLowerCase();
+                
+                let showCard = true;
+                
+                if (locationFilter && !location.includes(locationFilter.toLowerCase())) {
+                    showCard = false;
+                }
+                
+                if (deityFilter && !deity.includes(deityFilter.toLowerCase())) {
+                    showCard = false;
+                }
+                
+                card.style.display = showCard ? 'block' : 'none';
+            });
+        }
+        
+        document.getElementById('location-filter').addEventListener('change', applyFilters);
+        document.getElementById('deity-filter').addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>
